@@ -52,4 +52,4 @@ RFP.init(
   }
 );
 
-export default RFP;  // Default export for index.ts.
+export default RFP; 

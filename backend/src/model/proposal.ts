@@ -1,8 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../config/database'; 
-import RFP from './rfc';  // Importing RFP model for relationships
-import Vendor from './vendor';  // Importing Vendor model for relationships
-
+import RFP from './rfc'; 
+import Vendor from './vendor';  
 
 export class Proposal extends Model {
   public id!: number;
@@ -41,7 +40,7 @@ Proposal.init(
       messageId: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true, // prevent duplicates
+      unique: true, 
     },
     rawResponse: {
       type: DataTypes.TEXT,
@@ -59,8 +58,7 @@ Proposal.init(
     timestamps: true,
   }
 );
-//  Proposal.sync({ force: true });
-// Associations
+
 Proposal.belongsTo(RFP, { foreignKey: 'rfpId', as: 'rfp' });
 Proposal.belongsTo(Vendor, { foreignKey: 'vendorId', as: 'vendor' });
 

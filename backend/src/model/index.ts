@@ -3,8 +3,6 @@ import rfcmodel from './rfc'
 import proposalmodel from './proposal'
 import vendormodel from './vendor'
 
-// import rfpitemmodel from './rfpitem'
-
 
 
 
@@ -15,8 +13,6 @@ export const db = {
   Rfc:rfcmodel,
   Vendor:vendormodel,
   Proposal:proposalmodel,
- // ProposalItem:proposalitemmodel,
-  //rfpitem:rfpitemmodel
 };
 
 export default db;

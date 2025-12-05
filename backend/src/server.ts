@@ -6,7 +6,8 @@ import { checkEmails } from './services/emailServices';
 import routers from './routes/routes';
 import "./cron/emailcron";
 import {db} from '../src/model'        
-
+import swaggerUi from "swagger-ui-express";
+import { swaggerDocument } from './swagger';
 dotenv.config();
 
 const app = express();
@@ -21,9 +22,8 @@ app.use(express.json());
 
 app.use('/api', routers);
 
-// Poll emails every 5 min
-// setInterval(checkEmails, 300000);
-// checkEmails
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 const startServer = async () => {
   try {
     await sequelize.authenticate();

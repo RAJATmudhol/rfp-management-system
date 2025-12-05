@@ -10,7 +10,7 @@ const rfcRouter = express.Router();
 
 rfcRouter.post('/create',createsrfc);
 rfcRouter.post('/getall',getRFP)
-rfcRouter.post('/send',sendRFPToVendors)
+rfcRouter.post('/sendProposalTovendor',sendRFPToVendors)
 
 
 

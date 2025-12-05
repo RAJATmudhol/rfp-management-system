@@ -72,7 +72,7 @@ export const sendRFP = async (vendorEmail: string, rfp: any) => {
 const imapConfig = {
   user: process.env.EMAIL_USER!,
   password: process.env.EMAIL_PASS!,
-  host: process.env.EMAIL_HOST!,  // Ensure this is 'imap.gmail.com' for Gmail
+  host: process.env.EMAIL_HOST!,  
   port: Number(process.env.EMAIL_PORT!),  // 993 for Gmail
   tls: true,
   tlsOptions: { rejectUnauthorized: false },
@@ -98,10 +98,10 @@ export function checkEmails(): Promise<void> {
 
         const lastChecked = new Date(0);  
 
-        // Updated search: Fetch only replied emails (with 'Re:' in subject) since last check imap.search([["SINCE", lastChecked.toISOString()], ["SUBJECT", "RFP Request – ID:"]], (err, uids) => {
+       
            imap.search([["SINCE", lastChecked.toISOString()], ["SUBJECT", "Re:"]], (err, uids) => {
           if (err) {
-           // console.error("Error searching emails:", err);
+           
             imap.end();
             return reject(err);
           }
@@ -117,7 +117,7 @@ export function checkEmails(): Promise<void> {
           f.on("message", async (msg, seqno) => {
             msg.on("body", async (stream, info) => {
               try {
-                // Collect raw email data
+             
                 const raw = await new Promise<string>((res, rej) => {
                   let buffer = "";
                   stream.on("data", (chunk) => buffer += chunk.toString());
@@ -125,45 +125,40 @@ export function checkEmails(): Promise<void> {
                   stream.on("error", rej);
                 });
 
-                // Parse email
+             
                 const mail = await simpleParser(raw);
                 const senderEmail = mail.from?.value?.[0]?.address;
                 const messageId = mail.messageId;
 
                 if (!senderEmail || !messageId) return;
 
-                // Extract RFP ID from subject/body
+              
                 const rfpId = extractRfpId(mail);
                 if (!rfpId) {
-                 // console.log("No RFP ID found in replied email:", mail.subject);
                   return;
                 }
 
-                // Skip duplicates
+               
                 const exists = await db.Proposal.findOne({ where: { messageId } });
                 if (exists) {
-                 // console.log("Skipping duplicate proposal:", messageId);
                   return;
                 }
-
-                // Find RFP by ID
                 const rfp = await db.Rfc.findOne({ where: { id: rfpId } });
                 if (!rfp) {
                 //  console.log("RFP not found for ID:", rfpId);
                   return;
                 }
 
-                // Find vendor by email
                 const vendor = await db.Vendor.findOne({ where: { email: senderEmail } });
                 if (!vendor) {
                  // console.log("Vendor not found for email:", senderEmail);
                   return;
                 }
 
-                // Parse proposal
+              
                 const parsedData = await parseProposal(mail.text || "");
 
-                // Save proposal
+               
                 await db.Proposal.create({
                   rfpId: rfpId,  // UUID string
                   vendorId: vendor.id,
@@ -173,15 +168,14 @@ export function checkEmails(): Promise<void> {
                   messageId: messageId,
                 });
 
-              //  console.log("✅ Proposal saved for:", senderEmail, "RFP:", rfpId);
+            
               } catch (parseErr) {
-               // console.error("Error processing replied email:", parseErr);
+               console.error("Error processing replied email:", parseErr);
               }
             });
           });
 
           f.once("end", () => {
-           // console.log("✅ Done processing all replied emails!");
             imap.end();
             resolve();
           });
@@ -205,16 +199,10 @@ export function checkEmails(): Promise<void> {
 function extractRfpId(mail: any): string | null {
   const text = mail.text || "";
   const subject = mail.subject || "";
-
-  // From subject:   "Re: RFP Request – ID: cb3c50ef-..."
   const subjectMatch = subject.match(/ID:\s*([a-f0-9\-]{36})/i);
   if (subjectMatch) return subjectMatch[1];
-
-  // From reply footer inside email body
   const footerMatch = text.match(/RFP-ID:\s*([a-f0-9\-]{36})/i);
   if (footerMatch) return footerMatch[1];
-
-  // From ORIGINAL EMAIL inside reply
   const bodyMatch = text.match(/ID:\s*([a-f0-9\-]{36})/i);
   if (bodyMatch) return bodyMatch[1];
 

@@ -29,13 +29,10 @@ export const sendRFPToVendors = async (req: Request, res: Response) => {
 
     if (!rfpId || !vendorIds?.length) {
       return res.status(400).json({ error: "rfpId and vendorIds required" });
-    }
-
-   
+    }  
     const rfp = await db.Rfc.findByPk(rfpId);
     if (!rfp) return res.status(404).json({ error: "RFP not found" });
 
-   
     const vendors = await db.Vendor.findAll({
       where: { id: vendorIds }
     });
@@ -43,7 +40,6 @@ export const sendRFPToVendors = async (req: Request, res: Response) => {
     for (const vendor of vendors) {
       await sendRFP(vendor.email, rfp);
     }
-
     res.json({ message: "RFP sent successfully", vendors: vendors.length });
   } catch (error) {
     console.error("Error sending RFP:", error);
@@ -51,11 +47,8 @@ export const sendRFPToVendors = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const getRFP = async (req: Request, res: Response) => {
   try {
-     
     const rfp = await db.Rfc.findAll();
     res.status(201).json(rfp); 
   } catch (error) {

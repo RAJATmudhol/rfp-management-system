@@ -78,7 +78,7 @@ export default function Proposal() {
         </Table>
       </TableContainer>
 
-      {/* Recommendation Section */}
+   
       {recommendation && (
         <Box className="bg-green-100 p-4 rounded-lg shadow-md">
           <Typography variant="h6" className="font-semibold mb-2">

@@ -1,11 +1,9 @@
 
 import OpenAI from 'openai'
 
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 })
-
 
 function extractJSON(text: string): string {
   const match = text.match(/\{[\s\S]*\}/);
@@ -19,7 +17,6 @@ function safeJSONParse<T>(text: string, fallback: T): T {
     return fallback;
   }
 }
-
 
 export async function parseRFP(input: string) {
   const prompt = `
@@ -62,23 +59,16 @@ function safeParse(text: string, fallback: any) {
   }
 }
 
-/* ----------------------------------------------------------
-   Parse vendor proposal email → normalized JSON
----------------------------------------------------------- */
+
 function extractVendorReply(text: string): string {
-  // Split using Gmail quoted reply pattern
+
   const parts = text.split(/\nOn .* wrote:\n/i);
-
-  // Vendor reply is always before the first quoted message
   const reply = parts[0].trim();
-
   return reply;
 }
 
 export async function parseProposal(emailBody: string) {
-
   const vendorReply = extractVendorReply(emailBody);
-
   const prompt = `
 You are an AI assistant that extracts structured purchasing proposal data
 from vendor replies. Ignore quoted email threads.
@@ -120,10 +110,6 @@ Return JSON:
   });
 }
 
-
-/* ------------------------------------------------------
- Compare proposals (AI-based weighted scoring)
--------------------------------------------------------- */
 export async function aiCompareProposals(proposals: any[]) {
   const prompt = `
 You are selecting the best vendor proposal.

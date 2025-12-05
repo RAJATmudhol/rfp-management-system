@@ -15,7 +15,7 @@ import {
   ListItemText,
   Button,
 } from "@mui/material";
-
+import SendIcon from '@mui/icons-material/Send';
 export default function RFPChat() {
   const navigate = useNavigate();
   const [input, setInput] = useState("");
@@ -31,7 +31,7 @@ export default function RFPChat() {
     fetchVendors();
   }, []);
 
-  // Create RFP
+
   const handleCreateRFP = async () => {
     if (!input.trim()) return;
     setCreating(true);
@@ -49,7 +49,6 @@ export default function RFPChat() {
     }
   };
 
-  // Fetch RFPs
   const fetchRfps = async () => {
     try {
       const res = await axios.post("/api/rfps/getall", {});
@@ -59,7 +58,7 @@ export default function RFPChat() {
     }
   };
 
-  // Fetch Vendors
+
   const fetchVendors = async () => {
     try {
       const res = await axios.post("/api/vendors/getall", {});
@@ -69,18 +68,15 @@ export default function RFPChat() {
     }
   };
 
-  // Select RFP row
   const handleRfpSelect = (rfpId) => {
     setSelectedRfp(rfpId);
   };
 
-  // Handle vendor selection
   const handleVendorChange = (event) => {
     const values = event.target.value.map((v) => v.toString());
     setSelectedVendors(values);
   };
 
-  // Send RFP to selected vendors
   const handleSendToVendors = async () => {
     if (!selectedRfp) {
       alert("Please select an RFP first.");
@@ -92,7 +88,7 @@ export default function RFPChat() {
     }
 
     try {
-      await axios.post("/api/rfps/send", {
+      await axios.post("/api/rfps/sendProposalTovendor", {
         rfpId: selectedRfp,
         vendorIds: selectedVendors,
       });
@@ -104,14 +100,21 @@ export default function RFPChat() {
     }
   };
 
-  // Navigate to Proposal page
+
   const handleProposalClick = (rfpId) => {
     navigate("/proposals", { state: { rfpId } });
   };
-
+ const addvendors = () => {
+    navigate("/addvendors");
+  };
   return (
+    <div>
+      <Button variant="contained" endIcon={<SendIcon />} onClick={addvendors}>
+     Add vendors 
+</Button>
+     
     <div className="bg-blue-50 p-6 rounded-lg shadow-md">
-      {/* Create RFP Section */}
+     
       <div className="flex items-start gap-4 w-full mb-6">
         <div className="w-1/2">
           <h3 className="text-xl font-semibold mb-2">Create RFP via Chat</h3>
@@ -134,7 +137,6 @@ export default function RFPChat() {
 
       {error && <p className="mt-2 text-red-500">{error}</p>}
 
-      {/* RFP Table */}
       <div>
         <div className="flex justify-between items-center mb-2">
           <h4 className="text-lg font-semibold">All RFPs</h4>
@@ -182,7 +184,6 @@ export default function RFPChat() {
             </TableBody>
           </Table>
 
-          {/* Vendor Select + Send Button */}
           <div style={{ display: "flex", justifyContent: "flex-end", padding: "16px" }}>
             <Select
               multiple
@@ -215,6 +216,7 @@ export default function RFPChat() {
           </div>
         </TableContainer>
       </div>
+    </div>
     </div>
   );
 }
