@@ -3,7 +3,7 @@ AI-Powered RFP Management System
 
 ###### checkout to branch master #######
 ## 1. Project Setup
-### 1.a. Prerequisites
+### 1.a. Prerequisites  (branch master)
 Node.js v18+, PostgreSQL, OpenAI API Key, SMTP email credentials.
 ### 1.b. Install Steps
 create a .env with provided .env.example file 
